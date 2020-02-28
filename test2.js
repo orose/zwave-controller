@@ -3,7 +3,7 @@ var ZWave = require('openzwave-shared');
 var os = require('os');
 
 var zwave = new ZWave({
-  //ConsoleOutput: true
+  ConsoleOutput: false
 });
 
 zwavedriverpaths = {

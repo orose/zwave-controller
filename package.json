@@ -2,11 +2,16 @@
   "name": "zwave-controller",
   "version": "1.0.0",
   "description": "Experimental Z-Wave controller running on Raspberry Pi",
-  "main": "test.js",
+  "main": "server.js",
   "dependencies": {
+    "express": "^4.17.1",
     "openzwave-shared": "^1.6.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
