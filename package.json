@@ -2,7 +2,7 @@
   "name": "zwave-controller",
   "version": "1.0.0",
   "description": "Experimental Z-Wave controller running on Raspberry Pi",
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.17.1",
     "morgan": "^1.9.1",

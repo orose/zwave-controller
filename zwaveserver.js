@@ -137,8 +137,8 @@ zwave.on('scan complete', function () {
   //    zwave.setValue(5,38,1,0,50);
   //zwave.setValue({node_id:5,	class_id: 38,	instance:1,	index:0}, 50 );
   //zwave.setValue({node_id:3,	class_id: 37,	instance:1,	index:0}, true );
-  zwave.setValue(3,37,1,0,true);
-  zwave.requestAllConfigParams(3);
+  //zwave.setValue(3,37,1,0,true);
+  //zwave.requestAllConfigParams(3);
 });
 
 zwave.on('controller command', function (n, rv, st, msg) {
@@ -154,4 +154,14 @@ process.on('SIGINT', function () {
   console.log('disconnecting...');
   zwave.disconnect(zwavedriverpaths[os.platform()]);
   process.exit();
+});
+
+
+process.on('message', function (message) {
+  if (message === 'on') {
+    zwave.setValue(3,37,1,0,true);
+  } else if (message === 'off') {
+    zwave.setValue(3,37,1,0,false);
+  }
+  zwave.requestAllConfigParams(3);
 });
