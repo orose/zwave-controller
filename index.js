@@ -16,15 +16,20 @@ const options = {
 const child_zwave = fork(zwaveserver, parameters, options);
 
 app.use(httpLogger);
+app.set('view engine', 'pug');
+
+app.get('/', (req, res) => {
+  res.render('index', { title: 'Smarthome', message: 'Smarthome' })
+});
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');
-  res.send('Hello World!');
+  res.render('index', { title: 'Smarthome', message: 'Smarthome' })
 });
 
 app.get('/off', (req, res) => {
   child_zwave.send('off');
-  res.send('Hello World!');
+  res.render('index', { title: 'Smarthome', message: 'Smarthome' })
 });
 
 app.listen(port, () => {

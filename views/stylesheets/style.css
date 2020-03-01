@@ -1,0 +1,18 @@
+body {
+  background-color: #ffc;
+}
+
+a {
+  text-decoration: none;
+  display: block;
+  padding: 1rem;
+  margin: 1rem;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  background-color: blue;
+  font-weight: bold;
+}
+a:visited {
+  color: #fff;
+}
