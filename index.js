@@ -24,12 +24,12 @@ app.get('/', (req, res) => {
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');
-  res.render('index', { title: 'Smarthome', message: 'Smarthome' })
+  res.redirect('/');
 });
 
 app.get('/off', (req, res) => {
   child_zwave.send('off');
-  res.render('index', { title: 'Smarthome', message: 'Smarthome' })
+  res.redirect('/');
 });
 
 app.listen(port, () => {
