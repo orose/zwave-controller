@@ -1,4 +1,5 @@
 const express = require('express');
+const config = require('./config');
 const { httpLogger } = require('./middlewares');
 const { logger } = require('./utils');
 
@@ -19,7 +20,8 @@ app.use(httpLogger);
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {
-  res.render('index', { title: 'Smarthome', message: 'Smarthome' })
+  let titleText = config.appTitle;
+  res.render('index', { title: titleText, message: titleText })
 });
 
 app.get('/on', (req, res) => {
