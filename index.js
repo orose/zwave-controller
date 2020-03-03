@@ -1,4 +1,5 @@
 const express = require('express');
+const mysql = require('mysql');
 const config = require('./config');
 const { httpLogger } = require('./middlewares');
 const { logger } = require('./utils');
@@ -10,6 +11,21 @@ const fork = require('child_process').fork;
 
 const app = express();
 const port = 3000;
+
+const db = mysql.createConnection ({
+    host: config.dbHostname,
+    user: config.dbUsername,
+    password: config.dbPassword,
+    database: config.dbName
+});
+
+db.connect((err) => {
+    if (err) {
+        throw err;
+    }
+    console.log('Connected to database');
+});
+global.db = db;
 
 const zwaveserver = path.resolve('./zwaveserver.js');
 const parameters = [];
