@@ -34,6 +34,16 @@ app.get('/off', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/add-node', (req, res) => {
+  child_zwave.send('add-node');
+  res.redirect('/');
+});
+
+app.get('/remove-node', (req, res) => {
+  child_zwave.send('remove-node');
+  res.redirect('/');
+});
+
 app.listen(port, () => {
   logger.info(`Server listening on port ${port}!`);
 });

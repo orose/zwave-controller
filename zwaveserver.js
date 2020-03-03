@@ -1,9 +1,12 @@
-//var ZWave = require('./lib/openzwave-shared.js');
 var ZWave = require('openzwave-shared');
 var os = require('os');
 
+var logPath = __dirname + '/logs';
+
 var zwave = new ZWave({
-  ConsoleOutput: false
+  ConsoleOutput: false,
+  SaveConfiguration: true,
+  UserPath: logPath
 });
 console.log('test');
 
@@ -159,11 +162,15 @@ process.on('SIGINT', function () {
 
 process.on('message', function (message) {
   if (message === 'on') {
-    zwave.setValue(3,37,1,0,true);
+    zwave.setValue(5,37,1,0,true);
     zwave.setValue(4,37,1,0,true);
   } else if (message === 'off') {
-    zwave.setValue(3,37,1,0,false);
+    zwave.setValue(5,37,1,0,false);
     zwave.setValue(4,37,1,0,false);
+  } else if (message === 'add-node') {
+    zwave.addNode(false);
+  } else if (message === 'remove-node') {
+    zwave.removeNode();
   }
   zwave.requestAllConfigParams(3);
 });
