@@ -1,12 +1,14 @@
 var ZWave = require('openzwave-shared');
 var os = require('os');
+const config = require('./config');
 
 var logPath = __dirname + '/logs';
 
 var zwave = new ZWave({
   ConsoleOutput: false,
   SaveConfiguration: true,
-  UserPath: logPath
+  UserPath: logPath,
+  NetworkKey: config.securityKey
 });
 console.log('test');
 
