@@ -173,6 +173,14 @@ process.on('message', function (message) {
     zwave.addNode(true);
   } else if (message === 'remove-node') {
     zwave.removeNode();
+  } else if (message === 'report_2') {
+    console.log("Node: %j", nodes[2]);
+    process.send(nodes[2]);
+  } else if (message === 'report_3') {
+    console.log("Node: %j", nodes[3]);
+    process.send(nodes[3]);
+  } else if (message === 'report_4') {
+    console.log("Node: %j", nodes[4]);
+    process.send(nodes[4]);
   }
-  zwave.requestAllConfigParams(3);
 });

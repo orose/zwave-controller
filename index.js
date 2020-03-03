@@ -3,6 +3,8 @@ const config = require('./config');
 const { httpLogger } = require('./middlewares');
 const { logger } = require('./utils');
 
+const fs = require('fs');
+
 const path = require('path');
 const fork = require('child_process').fork;
 
@@ -43,6 +45,16 @@ app.get('/remove-node', (req, res) => {
   child_zwave.send('remove-node');
   res.redirect('/');
 });
+
+app.get('/report/:nodeId', (req, res) => {
+  child_zwave.send('report_' + req.params.nodeId);
+  res.redirect('/');
+});
+
+child_zwave.on('message', message => {
+  let data = JSON.stringify(message);
+  fs.writeFileSync('./logs/message-dump.json', data);
+})
 
 app.listen(port, () => {
   logger.info(`Server listening on port ${port}!`);
