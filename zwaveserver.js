@@ -160,8 +160,10 @@ process.on('SIGINT', function () {
 process.on('message', function (message) {
   if (message === 'on') {
     zwave.setValue(3,37,1,0,true);
+    zwave.setValue(4,37,1,0,true);
   } else if (message === 'off') {
     zwave.setValue(3,37,1,0,false);
+    zwave.setValue(4,37,1,0,false);
   }
   zwave.requestAllConfigParams(3);
 });
