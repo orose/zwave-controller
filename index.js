@@ -57,8 +57,33 @@ app.get('/add-node', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/add-node-secure', (req, res) => {
+  child_zwave.send('add-node-secure');
+  res.redirect('/');
+});
+
 app.get('/remove-node', (req, res) => {
   child_zwave.send('remove-node');
+  res.redirect('/');
+});
+
+app.get('/reset-controller', (req, res) => {
+  child_zwave.send('reset-controller');
+  res.redirect('/');
+});
+
+app.get('/heal', (req, res) => {
+  child_zwave.send('heal');
+  res.redirect('/');
+});
+
+app.get('/unlock-door', (req, res) => {
+  child_zwave.send('unlock-door');
+  res.redirect('/');
+});
+
+app.get('/lock-door', (req, res) => {
+  child_zwave.send('lock-door');
   res.redirect('/');
 });
 

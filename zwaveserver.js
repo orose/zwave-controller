@@ -1,4 +1,5 @@
 var ZWave = require('openzwave-shared');
+const mysql = require('mysql');
 var os = require('os');
 const config = require('./config');
 
@@ -10,7 +11,21 @@ var zwave = new ZWave({
   UserPath: logPath,
   NetworkKey: config.securityKey
 });
-console.log('test');
+
+const db = mysql.createConnection ({
+    host: config.dbHostname,
+    user: config.dbUsername,
+    password: config.dbPassword,
+    database: config.dbName
+});
+
+db.connect((err) => {
+    if (err) {
+        throw err;
+    }
+    console.log('Connected to database');
+});
+global.db = db;
 
 zwavedriverpaths = {
   "darwin": '/dev/cu.usbmodem1411',
@@ -67,6 +82,12 @@ zwave.on('value changed', function (nodeid, comclass, value) {
       value['label'],
       nodes[nodeid]['classes'][comclass][value.index]['value'],
       value['value']);
+    saveValue(
+      nodeid,
+      value['label'],
+      nodes[nodeid]['classes'][comclass][value.index]['value'],
+      value['value']
+    );
   }
   nodes[nodeid]['classes'][comclass][value.index] = value;
 });
@@ -164,15 +185,29 @@ process.on('SIGINT', function () {
 
 process.on('message', function (message) {
   if (message === 'on') {
-    zwave.setValue(2,37,1,0,true);
-    zwave.setValue(3,37,1,0,true);
+    zwave.setValue(4,37,1,0,true);
+    zwave.setValue(6,37,1,0,true);
+    zwave.setValue(7,37,1,0,true);
   } else if (message === 'off') {
-    zwave.setValue(2,37,1,0,false);
-    zwave.setValue(3,37,1,0,false);
-  } else if (message === 'add-node') {
+    zwave.setValue(4,37,1,0,false);
+    zwave.setValue(6,37,1,0,false);
+    zwave.setValue(7,37,1,0,false);
+  } else if (message === 'add-node-secure') {
     zwave.addNode(true);
+  } else if (message === 'add-node') {
+    zwave.addNode(false);
   } else if (message === 'remove-node') {
     zwave.removeNode();
+  } else if (message === 'reset-controller') {
+    zwave.hardReset();
+  } else if (message === 'lock-door') {
+    zwave.setValue(11,98,1,0,true);
+    //zwave.hardReset();
+  } else if (message === 'unlock-door') {
+    zwave.setValue(11,98,1,0,false);
+    //zwave.hardReset();
+  } else if (message === 'heal') {
+    zwave.healNetwork();
   } else if (message === 'report_2') {
     console.log("Node: %j", nodes[2]);
     process.send(nodes[2]);
@@ -184,3 +219,13 @@ process.on('message', function (message) {
     process.send(nodes[4]);
   }
 });
+
+function saveValue(nodeid, label, oldValue, newValue) {
+  let query = "INSERT INTO `nodevalues` (node_id, label, new_value, old_value) VALUES ('" +
+nodeid + "', '" + label + "', '" + newValue + "', '" + oldValue + "')";
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
