@@ -36,6 +36,16 @@ app.get('/off', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/vifte-on', (req, res) => {
+  child_zwave.send('vifte-on');
+  res.redirect('/');
+});
+
+app.get('/vifte-off', (req, res) => {
+  child_zwave.send('vifte-off');
+  res.redirect('/');
+});
+
 app.get('/add-node', (req, res) => {
   child_zwave.send('add-node');
   res.redirect('/');
