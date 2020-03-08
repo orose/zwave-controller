@@ -1,6 +1,6 @@
 var ZWave = require('openzwave-shared');
-const mysql = require('mysql');
 var os = require('os');
+const axios = require('axios');
 const config = require('./config');
 
 var logPath = __dirname + '/logs';
@@ -12,21 +12,6 @@ var zwave = new ZWave({
   NetworkKey: config.securityKey
 });
 
-const db = mysql.createConnection ({
-    host: config.dbHostname,
-    user: config.dbUsername,
-    password: config.dbPassword,
-    database: config.dbName
-});
-
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Connected to database');
-});
-global.db = db;
-
 zwavedriverpaths = {
   "darwin": '/dev/cu.usbmodem1411',
   "linux": '/dev/ttyAMA0',
@@ -37,17 +22,17 @@ var nodes = [];
 var homeid = null;
 
 zwave.on('connected', function (version) {
-  console.log("**** CONNECTED ****")
-  console.log("Openzwave version:", version)
+  process.send("**** CONNECTED ****");
+  process.send("Openzwave version:" + version);
 });
 
 zwave.on('driver ready', function (home_id) {
   homeid = home_id;
-  console.log('scanning homeid=0x%s...', homeid.toString(16));
+  process.send('scanning homeid=0x' + homeid.toString(16) + '...');
 });
 
 zwave.on('driver failed', function () {
-  console.log('failed to start driver');
+  process.send('Failed to start driver');
   process.exit();
 });
 
@@ -67,7 +52,7 @@ zwave.on('node added', function (nodeid) {
 });
 
 zwave.on('node event', function (nodeid, data) {
-  console.log('node%d event: Basic set %d', nodeid, data);
+  process.send('node ' + nodeid + ' event: Basic set ' + data);
 });
 
 zwave.on('value added', function (nodeid, comclass, value) {
@@ -78,16 +63,12 @@ zwave.on('value added', function (nodeid, comclass, value) {
 
 zwave.on('value changed', function (nodeid, comclass, value) {
   if (nodes[nodeid]['ready']) {
-    console.log('node%d: changed: %d:%s:%s->%s', nodeid, comclass,
-      value['label'],
-      nodes[nodeid]['classes'][comclass][value.index]['value'],
-      value['value']);
-    saveValue(
-      nodeid,
-      value['label'],
-      nodes[nodeid]['classes'][comclass][value.index]['value'],
-      value['value']
-    );
+    let label = value['label'];
+    let oldValue = nodes[nodeid]['classes'][comclass][value.index]['value'];
+    let newValue = value['value'];
+
+    process.send('node ' + nodeid + ' changed: ' + comclass + ':' + label + ':' + oldValue + '->' + newValue);
+    saveValue(nodeid, label, oldValue, newValue);
   }
   nodes[nodeid]['classes'][comclass][value.index] = value;
 });
@@ -134,31 +115,37 @@ zwave.on('node ready', function (nodeid, nodeinfo) {
 zwave.on('notification', function (nodeid, notif) {
   switch (notif) {
     case 0:
-      console.log('node%d: message complete', nodeid);
+      process.send('node ' + nodeid + ': message complete');
       break;
     case 1:
-      console.log('node%d: timeout', nodeid);
+      process.send('node ' + nodeid + ': timeout');
       break;
     case 2:
       console.log('node%d: nop', nodeid);
+      process.send('node ' + nodeid + ': nop');
       break;
     case 3:
       console.log('node%d: node awake', nodeid);
+      process.send('node ' + nodeid + ': node awake');
       break;
     case 4:
       console.log('node%d: node sleep', nodeid);
+      process.send('node ' + nodeid + ': node sleep');
       break;
     case 5:
       console.log('node%d: node dead', nodeid);
+      process.send('node ' + nodeid + ': node dead');
       break;
     case 6:
       console.log('node%d: node alive', nodeid);
+      process.send('node ' + nodeid + ': node alive');
       break;
   }
 });
 
 zwave.on('scan complete', function () {
-  console.log('====> scan complete');
+  process.send('====> scan complete');
+  //let data = JSON.stringify(message);
   // set dimmer node 5 to 50%
   //    zwave.setValue(5,38,1,0,50);
   //zwave.setValue({node_id:5,	class_id: 38,	instance:1,	index:0}, 50 );
@@ -171,13 +158,14 @@ zwave.on('controller command', function (n, rv, st, msg) {
   console.log(
     'controller commmand feedback: %s node==%d, retval=%d, state=%d', msg,
     n, rv, st);
+  process.send('Controller command feedback: ' + msg + ' node=' + n + ' retval=' + rv + ' state=' + st);
 });
 
-console.log("connecting to " + zwavedriverpaths[os.platform()]);
+process.send('Connecting to ' + zwavedriverpaths[os.platform()]);
 zwave.connect(zwavedriverpaths[os.platform()]);
 
 process.on('SIGINT', function () {
-  console.log('disconnecting...');
+  process.send('Disconnecting...');
   zwave.disconnect(zwavedriverpaths[os.platform()]);
   process.exit();
 });
@@ -199,13 +187,15 @@ process.on('message', function (message) {
   } else if (message === 'remove-node') {
     zwave.removeNode();
   } else if (message === 'reset-controller') {
-    zwave.hardReset();
+    //zwave.hardReset();
   } else if (message === 'lock-door') {
     zwave.setValue(11,98,1,0,true);
-    //zwave.hardReset();
   } else if (message === 'unlock-door') {
     zwave.setValue(11,98,1,0,false);
-    //zwave.hardReset();
+  } else if (message === 'smekklaas-off') {
+    //zwave.setValue(11,112,1,0,1);
+  } else if (message === 'smekklaas-on') {
+    //zwave.setValue(11,112,1,0,3);
   } else if (message === 'heal') {
     zwave.healNetwork();
   } else if (message === 'report_2') {
@@ -221,11 +211,21 @@ process.on('message', function (message) {
 });
 
 function saveValue(nodeid, label, oldValue, newValue) {
-  let query = "INSERT INTO `nodevalues` (node_id, label, new_value, old_value) VALUES ('" +
-nodeid + "', '" + label + "', '" + newValue + "', '" + oldValue + "')";
-  db.query(query, (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-  });
+  console.log('saveValue ' + nodeid);
+  let url = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/zwaveevent';
+  axios.post(url, {
+    nodeId: nodeid,
+    label: label,
+    newValue: newValue,
+    oldValue: oldValue
+  })
+    .then((res) => {
+        console.log(`statusCode: ${res.statusCode}`)
+        console.log(res)
+      
+    })
+    .catch((error) => {
+        console.error(error)
+      
+    })
 }

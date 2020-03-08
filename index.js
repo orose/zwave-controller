@@ -1,5 +1,4 @@
 const express = require('express');
-const mysql = require('mysql');
 const config = require('./config');
 const { httpLogger } = require('./middlewares');
 const { logger } = require('./utils');
@@ -11,21 +10,6 @@ const fork = require('child_process').fork;
 
 const app = express();
 const port = 3000;
-
-const db = mysql.createConnection ({
-    host: config.dbHostname,
-    user: config.dbUsername,
-    password: config.dbPassword,
-    database: config.dbName
-});
-
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Connected to database');
-});
-global.db = db;
 
 const zwaveserver = path.resolve('./zwaveserver.js');
 const parameters = [];
@@ -87,14 +71,25 @@ app.get('/lock-door', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/smekklaas-on', (req, res) => {
+  child_zwave.send('smekklaas-on');
+  res.redirect('/');
+});
+
+app.get('/smekklaas-off', (req, res) => {
+  child_zwave.send('smekklaas-off');
+  res.redirect('/');
+});
+
 app.get('/report/:nodeId', (req, res) => {
   child_zwave.send('report_' + req.params.nodeId);
   res.redirect('/');
 });
 
 child_zwave.on('message', message => {
-  let data = JSON.stringify(message);
-  fs.writeFileSync('./logs/message-dump.json', data);
+  logger.info(`ZWaveController: ${message}`);
+  //let data = JSON.stringify(message);
+  //fs.writeFileSync('./logs/message-dump.json', data);
 })
 
 app.listen(port, () => {

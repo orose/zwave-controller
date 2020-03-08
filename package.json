@@ -4,6 +4,7 @@
   "description": "Experimental Z-Wave controller running on Raspberry Pi",
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "morgan": "^1.9.1",
