@@ -2,6 +2,14 @@ var ZWave = require('openzwave-shared');
 var os = require('os');
 const axios = require('axios');
 const config = require('./config');
+const fs = require('fs');
+const storeData = (data, path) => {
+  try {
+    fs.writeFileSync(path, JSON.stringify(data))
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 var logPath = __dirname + '/logs';
 
@@ -145,7 +153,9 @@ zwave.on('notification', function (nodeid, notif) {
 
 zwave.on('scan complete', function () {
   process.send('====> scan complete');
-  //let data = JSON.stringify(message);
+  let data = JSON.stringify(nodes);
+  storeData(nodes, './node-dump.json');
+
   // set dimmer node 5 to 50%
   //    zwave.setValue(5,38,1,0,50);
   //zwave.setValue({node_id:5,	class_id: 38,	instance:1,	index:0}, 50 );
