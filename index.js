@@ -2,6 +2,8 @@ const express = require('express');
 const config = require('./config');
 const { httpLogger } = require('./middlewares');
 const { logger } = require('./utils');
+const axios = require('axios');
+const bodyParser = require('body-parser');
 
 const fs = require('fs');
 
@@ -10,6 +12,8 @@ const fork = require('child_process').fork;
 
 const app = express();
 const port = 3000;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false  }));
 
 const zwaveserver = path.resolve('./zwaveserver.js');
 const parameters = [];
@@ -25,6 +29,21 @@ app.get('/', (req, res) => {
   let titleText = config.appTitle;
   res.render('index', { title: titleText, message: titleText })
 });
+
+app.get('/status', (req, res) => {
+  let titleText = config.appTitle;
+  res.render('status', { title: titleText, message: titleText })
+});
+
+app.get('/status/:nodeId', (req, res) => {
+  let titleText = config.appTitle;
+  let url = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + req.params.nodeId;
+  axios.get(url)
+    .then(response => {
+      res.render('node-info', { title: titleText, data: response.data })
+  })
+});
+
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');

@@ -1,0 +1,10 @@
+extends layout.pug
+
+block content
+  h1= data.nodeId
+
+  ul
+    each item in data.values
+      li= item.label + ': ' + item.value
+
+  a(href="/status") Oversikt
