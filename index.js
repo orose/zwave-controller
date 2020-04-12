@@ -114,6 +114,21 @@ app.get('/stue', (req, res) => {
   })
 });
 
+app.get('/elliot', (req, res) => {
+  let titleText = config.appTitle;
+  let elliotDoorId = 3;
+  let urlDoor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + elliotDoorId;
+
+  const requestDoor = axios.get(urlDoor);
+
+  axios.all([requestDoor]).then(axios.spread((...responses) => {
+    const responseDoor = responses[0];
+
+    res.render('elliot', { title: titleText, dataDoor: responseDoor.data })
+  })).catch(errors => {
+      // react on errors.
+  })
+});
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');
