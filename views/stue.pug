@@ -1,0 +1,24 @@
+extends layout.pug
+
+block content
+  h1 Stue
+
+  h2 Ovn hyller
+  ul
+    each item in dataOvnHyller.values
+      li= item.label + ': ' + item.value
+
+  h2 Ovn vindu
+  ul
+    each item in dataOvnVindu.values
+      li= item.label + ': ' + item.value
+
+  h2 Røykvarsler
+  ul
+    each item in dataSensor.values
+      li= item.label + ': ' + item.value
+
+  a(href="/stue-ovn-on") Ovner på
+  a(href="/stue-ovn-off") Ovner av
+
+  a(href="/") Hjem

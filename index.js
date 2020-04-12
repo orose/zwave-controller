@@ -88,6 +88,32 @@ app.get('/gang', (req, res) => {
   })
 });
 
+app.get('/stue', (req, res) => {
+  let titleText = config.appTitle;
+  let stueOvnHyllerId = 6;
+  let stueOvnVindu = 4;
+  //let stueDoorId = ?;
+  let stueSensorId = 2;
+  let urlOvnHyller = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueOvnHyllerId;
+  let urlOvnVindu = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueOvnVindu;
+  let urlSensor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueSensorId;
+  //let urlDoor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueDoorId;
+
+  const requestOvnHyller = axios.get(urlOvnHyller);
+  const requestOvnVindu = axios.get(urlOvnVindu);
+  const requestSensor = axios.get(urlSensor);
+
+  axios.all([requestOvnHyller, requestOvnVindu, requestSensor]).then(axios.spread((...responses) => {
+    const responseOvnHyller = responses[0];
+    const responseOvnVindu = responses[1];
+    const responseSensor = responses[2];
+
+    res.render('stue', { title: titleText, dataOvnHyller: responseOvnHyller.data, dataSensor: responseSensor.data, dataOvnVindu: responseOvnVindu.data })
+  })).catch(errors => {
+      // react on errors.
+  })
+});
+
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');
@@ -107,6 +133,16 @@ app.get('/gang-ovn-off', (req, res) => {
 app.get('/gang-ovn-on', (req, res) => {
   child_zwave.send('gang-ovn-on');
   res.redirect('/gang');
+});
+
+app.get('/stue-ovn-off', (req, res) => {
+  child_zwave.send('stue-ovn-off');
+  res.redirect('/stue');
+});
+
+app.get('/stue-ovn-on', (req, res) => {
+  child_zwave.send('stue-ovn-on');
+  res.redirect('/stue');
 });
 
 app.get('/vifte-on', (req, res) => {
