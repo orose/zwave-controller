@@ -1,14 +1,10 @@
-html
-  head
-    title= title
-    link(href='https://fonts.googleapis.com/css?family=Roboto&display=swap' rel='stylesheet')
-    style
-      include stylesheets/style.css
-  body
-    h1= message
-    a(href="/on") Skru på ovner
-    a(href="/off") Skru av ovner
-    a(href="/elliot") Soverom - Elliot
-    a(href="/gang") Gang
-    a(href="/stue") Stue
-    a(href="/vaskerom") Vaskerom
+extends layout.pug
+
+block content
+  h1= message
+  a(href="/on") Skru på ovner
+  a(href="/off") Skru av ovner
+  a(href="/elliot") Soverom - Elliot
+  a(href="/gang") Gang
+  a(href="/stue") Stue
+  a(href="/vaskerom") Vaskerom
