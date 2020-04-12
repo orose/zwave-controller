@@ -190,6 +190,16 @@ process.on('message', function (message) {
     zwave.setValue(4,37,1,0,false);
     zwave.setValue(6,37,1,0,false);
     zwave.setValue(7,37,1,0,false);
+  } else if (message === 'gang-ovn-off') {
+    zwave.setValue(7,37,1,0,false);
+  } else if (message === 'gang-ovn-on') {
+    zwave.setValue(7,37,1,0,true);
+  } else if (message === 'stue-ovn-off') {
+    zwave.setValue(4,37,1,0,false);
+    zwave.setValue(6,37,1,0,false);
+  } else if (message === 'stue-ovn-on') {
+    zwave.setValue(4,37,1,0,true);
+    zwave.setValue(6,37,1,0,true);
   } else if (message === 'vifte-on') {
     zwave.setValue(9,37,1,0,true);
   } else if (message === 'vifte-off') {

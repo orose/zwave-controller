@@ -99,6 +99,16 @@ app.get('/off', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/gang-ovn-off', (req, res) => {
+  child_zwave.send('gang-ovn-off');
+  res.redirect('/gang');
+});
+
+app.get('/gang-ovn-on', (req, res) => {
+  child_zwave.send('gang-ovn-on');
+  res.redirect('/gang');
+});
+
 app.get('/vifte-on', (req, res) => {
   child_zwave.send('vifte-on');
   res.redirect('/vaskerom');
