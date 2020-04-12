@@ -3,14 +3,17 @@ extends layout.pug
 block content
   h1 Gang
 
+  h2 Lås
   ul
     each item in dataLaas.values
       li= item.label + ': ' + item.value
 
+  h2 Ovn
   ul
     each item in dataOvn.values
       li= item.label + ': ' + item.value
 
+  h2 Røykvarsler
   ul
     each item in dataSensor.values
       li= item.label + ': ' + item.value

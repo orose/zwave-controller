@@ -3,10 +3,12 @@ extends layout.pug
 block content
   h1 Vaskerom
 
+  h2 Multisensor
   ul
     each item in dataMulti.values
       li= item.label + ': ' + item.value
 
+  h2 Vifte
   ul
     each item in dataVifte.values
       li= item.label + ': ' + item.value
