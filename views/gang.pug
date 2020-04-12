@@ -1,0 +1,23 @@
+extends layout.pug
+
+block content
+  h1 Gang
+
+  ul
+    each item in dataLaas.values
+      li= item.label + ': ' + item.value
+
+  ul
+    each item in dataOvn.values
+      li= item.label + ': ' + item.value
+
+  ul
+    each item in dataSensor.values
+      li= item.label + ': ' + item.value
+
+  a(href="/unlock-door") Lås opp dør
+  a(href="/lock-door") Lås dør
+  a(href="/smekklaas-on") Smekklås på
+  a(href="/smekklaas-off") Smekklås av
+
+  a(href="/status") Oversikt

@@ -207,9 +207,9 @@ process.on('message', function (message) {
   } else if (message === 'unlock-door') {
     zwave.setValue(11,98,1,0,false);
   } else if (message === 'smekklaas-off') {
-    //zwave.setValue(11,112,1,0,1);
+    zwave.setConfigParam(11,1,0,1);
   } else if (message === 'smekklaas-on') {
-    //zwave.setValue(11,112,1,0,3);
+    zwave.setConfigParam(11,1,3,1);
   } else if (message === 'heal') {
     zwave.healNetwork();
   } else if (message === 'report_2') {

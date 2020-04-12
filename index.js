@@ -64,6 +64,30 @@ app.get('/vaskerom', (req, res) => {
   })
 });
 
+app.get('/gang', (req, res) => {
+  let titleText = config.appTitle;
+  let gangLaasId = 11;
+  let gangSensorId = 10;
+  let gangOvnId = 7;
+  let urlLaas = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + gangLaasId;
+  let urlSensor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + gangSensorId;
+  let urlOvn = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + gangOvnId;
+
+  const requestLaas = axios.get(urlLaas);
+  const requestSensor = axios.get(urlSensor);
+  const requestOvn = axios.get(urlOvn);
+
+  axios.all([requestLaas, requestOvn, requestSensor]).then(axios.spread((...responses) => {
+    const responseLaas = responses[0];
+    const responseOvn = responses[1];
+    const responseSensor = responses[2];
+
+    res.render('gang', { title: titleText, dataLaas: responseLaas.data, dataSensor: responseSensor.data, dataOvn: responseOvn.data })
+  })).catch(errors => {
+      // react on errors.
+  })
+});
+
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');
@@ -122,12 +146,12 @@ app.get('/lock-door', (req, res) => {
 
 app.get('/smekklaas-on', (req, res) => {
   child_zwave.send('smekklaas-on');
-  res.redirect('/');
+  res.redirect('/gang');
 });
 
 app.get('/smekklaas-off', (req, res) => {
   child_zwave.send('smekklaas-off');
-  res.redirect('/');
+  res.redirect('/gang');
 });
 
 app.get('/report/:nodeId', (req, res) => {
