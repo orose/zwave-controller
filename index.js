@@ -44,6 +44,26 @@ app.get('/status/:nodeId', (req, res) => {
   })
 });
 
+app.get('/vaskerom', (req, res) => {
+  let titleText = config.appTitle;
+  let vaskeromMultisensorId = 8;
+  let vaskeromVifteId = 9;
+  let urlMulti = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + vaskeromMultisensorId;
+  let urlVifte = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + vaskeromVifteId;
+
+  const requestMulti = axios.get(urlMulti);
+  const requestVifte = axios.get(urlVifte);
+
+  axios.all([requestMulti, requestVifte]).then(axios.spread((...responses) => {
+    const responseMulti = responses[0];
+    const responseVifte = responses[1];
+
+    res.render('vaskerom', { title: titleText, dataMulti: responseMulti.data, dataVifte: responseVifte.data })
+  })).catch(errors => {
+      // react on errors.
+  })
+});
+
 
 app.get('/on', (req, res) => {
   child_zwave.send('on');
@@ -57,12 +77,12 @@ app.get('/off', (req, res) => {
 
 app.get('/vifte-on', (req, res) => {
   child_zwave.send('vifte-on');
-  res.redirect('/');
+  res.redirect('/vaskerom');
 });
 
 app.get('/vifte-off', (req, res) => {
   child_zwave.send('vifte-off');
-  res.redirect('/');
+  res.redirect('/vaskerom');
 });
 
 app.get('/add-node', (req, res) => {

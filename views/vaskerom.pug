@@ -1,0 +1,17 @@
+extends layout.pug
+
+block content
+  h1= Vaskerom
+
+  ul
+    each item in dataMulti.values
+      li= item.label + ': ' + item.value
+
+  ul
+    each item in dataVifte.values
+      li= item.label + ': ' + item.value
+
+  a(href="/vifte-on") Skru på vifte
+  a(href="/vifte-off") Skru av vifte
+
+  a(href="/status") Oversikt
