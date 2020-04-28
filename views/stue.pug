@@ -18,6 +18,11 @@ block content
     each item in dataSensor.values
       li= item.label + ': ' + item.value
 
+  h2 Verandadør
+  ul
+    each item in dataDoor.values
+      li= item.label + ': ' + item.value
+
   a(href="/stue-ovn-on") Ovner på
   a(href="/stue-ovn-off") Ovner av
 

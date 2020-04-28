@@ -92,23 +92,25 @@ app.get('/stue', (req, res) => {
   let titleText = config.appTitle;
   let stueOvnHyllerId = 6;
   let stueOvnVindu = 4;
-  //let stueDoorId = ?;
+  let stueDoorId = 3;
   let stueSensorId = 2;
   let urlOvnHyller = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueOvnHyllerId;
   let urlOvnVindu = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueOvnVindu;
   let urlSensor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueSensorId;
-  //let urlDoor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueDoorId;
+  let urlDoor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + stueDoorId;
 
   const requestOvnHyller = axios.get(urlOvnHyller);
   const requestOvnVindu = axios.get(urlOvnVindu);
   const requestSensor = axios.get(urlSensor);
+  const requestDoor = axios.get(urlDoor);
 
-  axios.all([requestOvnHyller, requestOvnVindu, requestSensor]).then(axios.spread((...responses) => {
+  axios.all([requestOvnHyller, requestOvnVindu, requestSensor, requestDoor]).then(axios.spread((...responses) => {
     const responseOvnHyller = responses[0];
     const responseOvnVindu = responses[1];
     const responseSensor = responses[2];
+    const responseDoor = responses[3];
 
-    res.render('stue', { title: titleText, dataOvnHyller: responseOvnHyller.data, dataSensor: responseSensor.data, dataOvnVindu: responseOvnVindu.data })
+    res.render('stue', { title: titleText, dataOvnHyller: responseOvnHyller.data, dataSensor: responseSensor.data, dataOvnVindu: responseOvnVindu.data, dataDoor: responseDoor.data })
   })).catch(errors => {
       // react on errors.
   })
@@ -116,7 +118,7 @@ app.get('/stue', (req, res) => {
 
 app.get('/elliot', (req, res) => {
   let titleText = config.appTitle;
-  let elliotDoorId = 3;
+  let elliotDoorId = 12;
   let urlDoor = 'http://' + config.apiHostname + ':' + config.apiPort + '/api/node/' + elliotDoorId;
 
   const requestDoor = axios.get(urlDoor);
